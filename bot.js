@@ -17,9 +17,18 @@ const ruQuote = "https://api.forismatic.com/api/1.0/?method=getQuote&format=json
 
 const port = process.env.PORT;
 const app = express();
-const bot = new TelegramBot(process.env.BOT_API, { polling: true });
+const bot = new TelegramBot(process.env.BOT_API, { webHook: true });
 
-// bot.setWebHook('http:localhost:5000');
+bot.setWebHook('https://funbot-g4zd.onrender.com/secretPathForWebHook');
+
+app.use(express.json());
+app.get('/secretPathForWebHook', (req, res) => {
+    res.send('bot work');
+});
+app.listen(port, () => {
+    console.log(`server wor on http://localhost:${port}`);
+});
+
 bot.setMyCommands([
     { command: 'start', description: 'Все команды' },
     { command: 'randomphoto', description: 'Случайное фото 🖼️' },
@@ -160,32 +169,4 @@ bot.onText(/\/joke/, async (msg) => {
     } catch (err) {
         console.log(err);
     }
-})
-bot.onText(/\/bored/, async (msg) => {
-    try {
-        const chatId = msg.chat.id;
-        const res = await fetch(boredApi);
-
-        if (!res.ok) {
-            await bot.sendMessage(chatId, 'Не удалось придумать, чем заняться 🤔');
-            return;
-        }
-
-        const data = await res.json();
-        const message = `😐 Вот идея для тебя:\n\n🎯 *${data.activity}*\n\nТип: ${data.type}`;
-
-        await bot.sendMessage(chatId, message, { parse_mode: 'Markdown' });
-    } catch (err) {
-        console.error('Ошибка в /Bored:', err);
-    }
-})
-
-app.use(express.json());
-
-app.get('/secretPathForWebHook', (req, res) => {
-    res.send('bot work');
-});
-
-app.listen(port, () => {
-    console.log(`server wor on http://localhost:${port}`);
 });
