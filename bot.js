@@ -7,12 +7,10 @@ dotenv.config();
 const anyCat = "https://api.thecatapi.com/v1/images/search";
 const anyDog = 'https://dog.ceo/api/breeds/image/random';
 const anyJoke = 'https://v2.jokeapi.dev/joke/Any';
-const boredApi = 'https://www.boredapi.com/api/activity';
 const quot = 'https://favqs.com/api/qotd';
 const lorem = 'https://picsum.photos/200/300';
 const fact = 'https://uselessfacts.jsph.pl/random.json?language=en';
 const ruQuote = "https://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=ru"
-
 
 
 const port = process.env.PORT;
@@ -22,8 +20,9 @@ const bot = new TelegramBot(process.env.BOT_API, { webHook: true });
 bot.setWebHook('https://funbot-g4zd.onrender.com/secretPathForWebHook');
 
 app.use(express.json());
-app.get('/secretPathForWebHook', (req, res) => {
-    res.send('bot work');
+app.post('/secretPathForWebHook', (req, res) => {
+    bot.processUpdate(req.body);
+  res.sendStatus(200);  
 });
 app.listen(port, () => {
     console.log(`server wor on http://localhost:${port}`);
