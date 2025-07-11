@@ -21,51 +21,46 @@ bot.setWebHook('https://funbot-g4zd.onrender.com/secretPathForWebHook');
 
 app.use(express.json());
 app.post('/secretPathForWebHook', (req, res) => {
+    console.log('Пришёл update:', JSON.stringify(req.body, null, 2));
     bot.processUpdate(req.body);
-  res.sendStatus(200);  
+    res.sendStatus(200);
 });
 app.listen(port, () => {
     console.log(`server wor on http://localhost:${port}`);
 });
 
 bot.setMyCommands([
-    { command: 'start', description: 'Все команды' },
     { command: 'randomphoto', description: 'Случайное фото 🖼️' },
     { command: 'cat', description: 'Фото котика 🐱' },
     { command: 'dog', description: 'Фото собаки 🐶' },
     { command: 'joke', description: 'Расскажи шутку 😂' },
     { command: 'quote', description: 'Цитата мудрости 📜' },
     { command: 'fact', description: 'Случайный факт 😱' },
-    {command: 'ruquote', description: 'Цитата на руском языке'}
+    { command: 'ruquote', description: 'Цитата на руском языке' }
 ]);
-
-bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'All commands \n/Dog -- create a Dog photo\n/Cat -- create a Cat photo\n/Joke -- create a Joke\n')
-});
 
 bot.onText(/\/fact/, async (msg) => {
     const chatId = msg.chat.id;
     const res = await fetch(fact);
     if (!res.ok) {
-        bot.sendMessage('Fact not found');
+        bot.sendMessage(chatId,'Fact not found');
         return;
     }
     const data = await res.json();
     await bot.sendMessage(chatId, `Fact: ${data.text}`);
 })
-bot.onText(/\/ruquote/,async (msg) => {
-    try{
+bot.onText(/\/ruquote/, async (msg) => {
+    try {
         const chatId = msg.chat.id;
         const res = await fetch(ruQuote);
-        if(!res.ok){
-            bot.sendMessage('Цитата не тайдена');
+        if (!res.ok) {
+            bot.sendMessage(chatId,'Цитата не тайдена');
             return;
         }
         const data = await res.json();
         const text = `${data.quoteAuthor}:\n-${data.quoteText}`;
-        bot.sendMessage(chatId,text);
-    }catch(err){
+        bot.sendMessage(chatId, text);
+    } catch (err) {
         console.log(err);
     }
 })
@@ -81,7 +76,7 @@ bot.onText(/\/quote/, async (msg) => {
 
         const data = await res.json();
         console.log(data);
-        
+
         const quote = `${data.quote.author}:\n— ${data.quote.body}`;
 
         await bot.sendMessage(chatId, quote);
@@ -113,7 +108,7 @@ bot.onText(/\/dog/, async (msg) => {
         const chatId = msg.chat.id;
         const res = await fetch(anyDog);
         if (!res.ok) {
-            await bot.sendMessage('Error');
+            await bot.sendMessage(chatId,'Собака не найдена');
             return;
         }
         const data = await res.json();
@@ -135,7 +130,7 @@ bot.onText(/\/cat/, async (msg) => {
         const chatId = msg.chat.id;
         const res = await fetch(anyCat);
         if (!res.ok) {
-            await bot.sendMessage('Error');
+            await bot.sendMessage(chatId,'Кошка не найдена');
             return;
         }
         const data = await res.json();
